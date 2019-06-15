@@ -17,6 +17,7 @@ export class Tab2Page {
 
   openRegister(register: RegisterModel) {
     console.log('Registro', register);
+    this.localDataService.openRegister(register);
   }
 
 }

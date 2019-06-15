@@ -27,7 +27,7 @@ export class RegisterModel {
 
             case 'geo:': 
                 this.type = 'geo'
-                this.icon = 'globe'
+                this.icon = 'pin'
             break;
 
             default: 

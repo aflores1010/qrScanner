@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ɵConsole } from '@angular/core';
 import { RegisterModel } from '../models/register.model';
-import { ToastController } from '@ionic/angular';
+import { ToastController, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 
 @Injectable({
@@ -12,7 +13,10 @@ export class LocalDataService {
   registersSaved: RegisterModel[] = [];
   message: string;
 
-  constructor(private storage: Storage, private toastController: ToastController) { 
+  constructor(private storage: Storage, 
+              private toastController: ToastController,
+              private navController: NavController,
+              private inAppBrowser: InAppBrowser) { 
     this.getFromStorage();
   }
 
@@ -35,6 +39,7 @@ export class LocalDataService {
       this.registersSaved.unshift(newRegister);
       this.storage.set('register', this.registersSaved);
       this.message = 'Se han almacenado los datos del codigo QR'
+      this.openRegister(newRegister);
     }
 
   }
@@ -52,6 +57,21 @@ export class LocalDataService {
   async getFromStorage() {
    const tempStorage = await this.storage.get('register');
    this.registersSaved = tempStorage || [];
+  }
+
+  openRegister(register: RegisterModel) {
+    this.navController.navigateForward('/tabs/tab2');
+    switch (register.type) {
+      
+      case 'web':
+      this.inAppBrowser.create(register.text, '_system');
+      break
+
+      case 'geo':
+      this.navController.navigateForward('/tabs/tab2/map/' + register.text);
+      break
+    }
+
   }
   
 }
