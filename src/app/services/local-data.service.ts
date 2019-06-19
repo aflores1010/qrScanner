@@ -3,6 +3,8 @@ import { RegisterModel } from '../models/register.model';
 import { ToastController, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { File } from '@ionic-native/file/ngx'
+import { EmailComposer } from '@ionic-native/email-composer/ngx'
 
 
 @Injectable({
@@ -16,6 +18,8 @@ export class LocalDataService {
   constructor(private storage: Storage, 
               private toastController: ToastController,
               private navController: NavController,
+              private file: File,
+              private emailComposer: EmailComposer,
               private inAppBrowser: InAppBrowser) { 
     this.getFromStorage();
   }
@@ -71,6 +75,58 @@ export class LocalDataService {
       this.navController.navigateForward('/tabs/tab2/map/' + register.text);
       break
     }
+
+  }
+
+  sendEmail() {
+
+    const tempArray = [];
+    const headers = 'Type, Format, CreatedAt, Text\n';
+
+    tempArray.push(headers);
+
+    this.registersSaved.forEach( register => {
+
+      const row = register.type +', ' +register.format + ', ' + register.created + ', '+ register.text.replace(',', '') + '\n';
+      tempArray.push(row);
+
+    });
+    console.log(tempArray.join(''));
+    this.createFile(tempArray.join(''));
+  }
+
+  createFile(text: string ) {
+    
+    this.file.checkFile(this.file.dataDirectory, 'registers.csv').then( (exist) =>{
+      console.log('Existe archivo? ', exist);
+      return this.writeFile(text);
+    }).catch(()=> {
+      return this.file.createFile(this.file.dataDirectory, 'registers.csv', false)
+             .then( created =>{ this.writeFile(text)
+             }).catch(err => console.log('No se pudo crear el archivo', err))
+    });
+  }
+
+ async writeFile(text: string){
+   await this.file.writeExistingFile( this.file.dataDirectory, 'registers.csv', text );
+   console.log(' archivo creado ', this.file.dataDirectory);
+
+   const file = this.file.dataDirectory + '/registers.csv';
+
+   const email = {
+    to: 'p4ul1991@gmail.com',
+    cc: '',
+    bcc: [''],
+    attachments: [
+      file
+    ],
+    subject: 'APP TEST',
+    body: 'Prueba de los scan desde la aplicacion del curso ionic 4',
+    isHtml: true
+  }
+  
+  // Send a text message using default options
+  this.emailComposer.open(email);
 
   }
   

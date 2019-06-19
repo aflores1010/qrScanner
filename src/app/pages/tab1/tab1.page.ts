@@ -26,8 +26,8 @@ export class Tab1Page {
       }
      }).catch(err => {
          console.log('Error', err);
-         // this.localDataService.saveRegister('QRCode', 'http://www.youtube.com');
-         this.localDataService.saveRegister('QRCode', 'geo:9.039713970183458,-79.4327153249634');
+         this.localDataService.saveRegister('QRCode', 'http://www.youtube.com');
+        //  this.localDataService.saveRegister('QRCode', 'geo:9.039713970183458,-79.4327153249634');
      });
   }
 

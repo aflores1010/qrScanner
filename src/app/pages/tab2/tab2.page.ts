@@ -13,6 +13,7 @@ export class Tab2Page {
 
   sendEmail() {
     console.log('Enviando correo');
+    this.localDataService.sendEmail();
   }
 
   openRegister(register: RegisterModel) {
